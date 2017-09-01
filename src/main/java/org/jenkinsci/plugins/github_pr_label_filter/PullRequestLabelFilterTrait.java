@@ -61,33 +61,33 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
     private static final String DEFAULT_MATCH_ALL_REGEX = ".*";
 
     /**
-     * The strategy encoded as a bit-field.
+     * The regex for filtering pull request labels.
      */
-    private String pullRequestLabelRegex;
+    private String regex;
 
     /**
      * Constructor for stapler.
      *
-     * @param pullRequestLabelRegex Label for selecting pull request
+     * @param regex Label for filtering pull request labels
      */
     @DataBoundConstructor
-    public PullRequestLabelFilterTrait(String pullRequestLabelRegex) {
-        this.pullRequestLabelRegex = pullRequestLabelRegex;
+    public PullRequestLabelFilterTrait(String regex) {
+        this.regex = regex;
     }
 
     /**
-     * Gets the pull request label
+     * Gets the pull request filter regex
      *
-     * @return the pull request label
+     * @return the pull request filter regex labels
      */
-    public String getPullRequestLabelRegex() {
-        return pullRequestLabelRegex;
+    public String getRegex() {
+        return regex;
     }
 
-    public Pattern getPullRequestLabelRegexPattern() {
+    private Pattern pattern() {
         Pattern pattern;
         try {
-            pattern = Pattern.compile(getPullRequestLabelRegex());
+            pattern = Pattern.compile(getRegex());
         } catch (PatternSyntaxException e) {
             pattern = Pattern.compile(DEFAULT_MATCH_ALL_REGEX);
         }
@@ -114,9 +114,9 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
                     GitHubSCMSourceRequest githubRequest = (GitHubSCMSourceRequest) request;
                     PullRequestSCMHead pullRequestSCMHead = (PullRequestSCMHead) head;
 
-                    Pattern pullRequestRegexPattern = getPullRequestLabelRegexPattern();
+                    Pattern pattern = pattern();
 
-                    if (!DEFAULT_MATCH_ALL_REGEX.equals(getPullRequestLabelRegex())) {
+                    if (!DEFAULT_MATCH_ALL_REGEX.equals(getRegex())) {
                         Iterable<GHPullRequest> ghPullRequests = githubRequest.getPullRequests();
                         for (GHPullRequest ghPullRequest : ghPullRequests) {
                             if (ghPullRequest.getNumber() == pullRequestSCMHead.getNumber()) {
@@ -124,7 +124,7 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
                                 StringBuilder allLabels = new StringBuilder();
                                 for (GHLabel label : ghPullRequest.getLabels()) {
                                     allLabels.append(label.getName()).append(" ,");
-                                    if (pullRequestRegexPattern.matcher(label.getName()).matches()) {
+                                    if (pattern.matcher(label.getName()).matches()) {
                                         foundLabel = true;
                                         request.listener().getLogger().format("%n    Will Build PR %s. Found matching label : %s%n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()), label.getName());
                                         break;
@@ -185,7 +185,7 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
         }
 
         @Restricted(NoExternalUse.class)
-        public FormValidation doCheckPullRequestLabelRegex(@QueryParameter String value) {
+        public FormValidation doCheckRegex(@QueryParameter String value) {
 
             FormValidation formValidation;
             try {
