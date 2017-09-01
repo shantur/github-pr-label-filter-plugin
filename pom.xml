@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jenkins-ci.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>2.11</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>org.jenkins-ci.plugins</groupId>
+  <artifactId>github-pr-label-filter</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>hpi</packaging>
+
+  <properties>
+    <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
+    <jenkins.version>1.625.3</jenkins.version>
+    <workflow.version>1.14.2</workflow.version>
+    <github-branch-source.version>2.2.0</github-branch-source.version>
+  </properties>
+
+  <name>Github PR label filter plugin</name>
+  <description>Filter Github PR based on their labels</description>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Github+PR+label+filter+plugin</url>
+
+  <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>shantur</id>
+      <name>Shantur Rathore</name>
+      <email>shantur.rathore@gmail.com</email>
+    </developer>
+  </developers>
+
+  <!-- Assuming you want to host on @jenkinsci:
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+  </scm>
+   -->
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>github-branch-source</artifactId>
+      <version>${github-branch-source.version}</version>
+    </dependency>
+
+    <!-- Currently just here for interactive testing via hpi:run: -->
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-multibranch</artifactId>
+      <version>${workflow.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+
+</project>
