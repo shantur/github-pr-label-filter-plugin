@@ -57,6 +57,9 @@ import java.util.regex.PatternSyntaxException;
  *
  */
 public class PullRequestLabelFilterTrait extends SCMSourceTrait {
+
+    private static final String DEFAULT_MATCH_ALL_REGEX = ".*";
+
     /**
      * The strategy encoded as a bit-field.
      */
@@ -86,7 +89,7 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
         try {
             pattern = Pattern.compile(getPullRequestLabelRegex());
         } catch (PatternSyntaxException e) {
-            pattern = Pattern.compile(".*");
+            pattern = Pattern.compile(DEFAULT_MATCH_ALL_REGEX);
         }
         return pattern;
     }
@@ -113,7 +116,7 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
 
                     Pattern pullRequestRegexPattern = getPullRequestLabelRegexPattern();
 
-                    if (githubRequest.isFetchPRs() && !".*".equals(getPullRequestLabelRegex())) {
+                    if (!DEFAULT_MATCH_ALL_REGEX.equals(getPullRequestLabelRegex())) {
                         Iterable<GHPullRequest> ghPullRequests = githubRequest.getPullRequests();
                         for (GHPullRequest ghPullRequest : ghPullRequests) {
                             if (ghPullRequest.getNumber() == pullRequestSCMHead.getNumber()) {
