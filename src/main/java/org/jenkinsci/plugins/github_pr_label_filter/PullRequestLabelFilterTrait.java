@@ -66,6 +66,11 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
     private String regex;
 
     /**
+     * The pattern compiled from supplied regex
+     */
+    private transient Pattern pattern;
+
+    /**
      * Constructor for stapler.
      *
      * @param regex Label for filtering pull request labels
@@ -73,6 +78,7 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
     @DataBoundConstructor
     public PullRequestLabelFilterTrait(String regex) {
         this.regex = regex;
+        pattern = Pattern.compile(regex);
     }
 
     /**
@@ -82,16 +88,6 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
      */
     public String getRegex() {
         return regex;
-    }
-
-    private Pattern pattern() {
-        Pattern pattern;
-        try {
-            pattern = Pattern.compile(getRegex());
-        } catch (PatternSyntaxException e) {
-            pattern = Pattern.compile(DEFAULT_MATCH_ALL_REGEX);
-        }
-        return pattern;
     }
 
     /**
@@ -113,8 +109,6 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
                 if (request instanceof GitHubSCMSourceRequest && head instanceof PullRequestSCMHead) {
                     GitHubSCMSourceRequest githubRequest = (GitHubSCMSourceRequest) request;
                     PullRequestSCMHead pullRequestSCMHead = (PullRequestSCMHead) head;
-
-                    Pattern pattern = pattern();
 
                     if (!DEFAULT_MATCH_ALL_REGEX.equals(getRegex())) {
                         Iterable<GHPullRequest> ghPullRequests = githubRequest.getPullRequests();
@@ -201,7 +195,7 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
                 }
 
             } catch (PatternSyntaxException e) {
-                formValidation = FormValidation.error(e.getMessage());
+                formValidation = FormValidation.error("Invalid Regex : " + e.getMessage());
             }
 
             return formValidation;
