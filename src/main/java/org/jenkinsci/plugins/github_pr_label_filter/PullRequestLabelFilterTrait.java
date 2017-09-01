@@ -186,15 +186,25 @@ public class PullRequestLabelFilterTrait extends SCMSourceTrait {
 
         @Restricted(NoExternalUse.class)
         public FormValidation doCheckPullRequestLabelRegex(@QueryParameter String value) {
+
+            FormValidation formValidation;
             try {
                 if (value.trim().isEmpty()) {
-                    return FormValidation.error("Cannot have empty or blank regex.");
+                    formValidation = FormValidation.error("Cannot have empty or blank regex.");
+                } else {
+                    Pattern.compile(value);
+                    formValidation = FormValidation.ok();
                 }
-                Pattern.compile(value);
-                return FormValidation.ok();
+
+                if (DEFAULT_MATCH_ALL_REGEX.equals(value)) {
+                    formValidation = FormValidation.warning("You should delete this trait instead of matching all labels");
+                }
+
             } catch (PatternSyntaxException e) {
-                return FormValidation.error(e.getMessage());
+                formValidation = FormValidation.error(e.getMessage());
             }
+
+            return formValidation;
         }
     }
 
